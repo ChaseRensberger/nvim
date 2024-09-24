@@ -9,6 +9,7 @@ vim.opt.relativenumber = true
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+---@diagnostic disable-next-line: undefined-field
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
 	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
@@ -68,10 +69,10 @@ vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help ta
 vim.cmd("colorscheme rose-pine")
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-
+---@diagnostic disable-next-line: missing-fields
 require("nvim-treesitter.configs").setup({
 	-- A list of parser names, or "all" (the listed parsers MUST always be installed)
-	ensure_installed = { "lua" },
+	ensure_installed = { "lua", "markdown", "markdown_inline" },
 
 	-- Install parsers synchronously (only applied to `ensure_installed`)
 	sync_install = false,
@@ -144,7 +145,6 @@ require("lspconfig")["lua_ls"].setup({
 		Lua = {
 			diagnostics = {
 				globals = { "vim" },
-				diagnostics = { disable = { "missing-fields" } },
 			},
 			workspace = {
 				library = vim.api.nvim_get_runtime_file("", true),
