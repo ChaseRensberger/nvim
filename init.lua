@@ -46,11 +46,14 @@ require("lazy").setup({
 			"stevearc/conform.nvim",
 			opts = {},
 		},
-		-- { 'hrsh7th/nvim-cmp' },
-		-- { 'hrsh7th/cmp-nvim-lsp' },
-		-- { 'hrsh7th/cmp-buffer' },
-		-- { 'hrsh7th/cmp-path' },
-		-- { 'hrsh7th/cmp-cmdline' },
+		{ "hrsh7th/cmp-nvim-lsp" },
+		{ "hrsh7th/cmp-buffer" },
+		{ "hrsh7th/cmp-path" },
+		{ "hrsh7th/cmp-cmdline" },
+		{ "hrsh7th/nvim-cmp" },
+		{ "L3MON4D3/LuaSnip" },
+		{ "rafamadriz/friendly-snippets" },
+		{ "numToStr/Comment.nvim" },
 	},
 	-- automatically check for plugin updates
 	checker = { enabled = true },
@@ -87,15 +90,88 @@ require("nvim-treesitter.configs").setup({
 	},
 })
 
+local cmp = require("cmp")
+
+cmp.setup({
+	snippet = {
+		expand = function(args)
+			require("luasnip").lsp_expand(args.body)
+		end,
+	},
+	mapping = cmp.mapping.preset.insert({
+		["<C-b>"] = cmp.mapping.scroll_docs(-4),
+		["<C-f>"] = cmp.mapping.scroll_docs(4),
+		["<C-Space>"] = cmp.mapping.complete(),
+		["<C-e>"] = cmp.mapping.abort(),
+		["<CR>"] = cmp.mapping.confirm({ select = true }),
+	}),
+	sources = cmp.config.sources({
+		{ name = "nvim_lsp" },
+		{ name = "luasnip" },
+	}, {
+		{ name = "buffer" },
+	}),
+})
+
+-- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+-- cmp.setup.cmdline("/", {
+-- 	mapping = cmp.mapping.preset.cmdline(),
+-- 	sources = {
+-- 		{ name = "buffer" },
+-- 	},
+-- })
+--
+-- -- Use cmdline & path source for `:` (if you enabled `native_menu`, this won't work anymore).
+-- cmp.setup.cmdline(":", {
+-- 	mapping = cmp.mapping.preset.cmdline(),
+-- 	sources = cmp.config.sources({
+-- 		{ name = "path" },
+-- 	}, {
+-- 		{ name = "cmdline" },
+-- 	}),
+-- })
+
 require("mason").setup()
 require("mason-lspconfig").setup({
 	ensure_installed = { "lua_ls" },
 })
 
-require("lspconfig")["lua_ls"].setup({})
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+require("lspconfig")["lua_ls"].setup({
+	capabilities = capabilities,
+	settings = {
+		Lua = {
+			diagnostics = {
+				globals = { "vim" },
+				diagnostics = { disable = { "missing-fields" } },
+			},
+			workspace = {
+				library = vim.api.nvim_get_runtime_file("", true),
+				checkThirdParty = false, -- Disable unnecessary warnings about third-party libraries
+			},
+		},
+	},
+})
 
 require("conform").setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
 	},
+	format_on_save = {
+		-- These options will be passed to conform.format()
+		timeout_ms = 500,
+		lsp_format = "fallback",
+	},
 })
+
+require("Comment").setup()
+vim.keymap.set("n", "<leader>/", function()
+	require("Comment.api").toggle.linewise.current()
+end, { desc = "Toggle comment on current line" })
+vim.keymap.set(
+	"v",
+	"<leader>/",
+	"<ESC><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>",
+	{ desc = "Toggle comment on selected lines" }
+)
