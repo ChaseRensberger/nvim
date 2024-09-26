@@ -55,6 +55,7 @@ require("lazy").setup({
 		{ "L3MON4D3/LuaSnip" },
 		{ "rafamadriz/friendly-snippets" },
 		{ "numToStr/Comment.nvim" },
+		{ "m4xshen/autoclose.nvim" },
 	},
 	-- automatically check for plugin updates
 	checker = { enabled = true },
@@ -72,7 +73,7 @@ vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 ---@diagnostic disable-next-line: missing-fields
 require("nvim-treesitter.configs").setup({
 	-- A list of parser names, or "all" (the listed parsers MUST always be installed)
-	ensure_installed = { "lua", "markdown", "markdown_inline" },
+	ensure_installed = { "lua", "markdown", "markdown_inline", "javascript", "typescript", "go" },
 
 	-- Install parsers synchronously (only applied to `ensure_installed`)
 	sync_install = false,
@@ -114,27 +115,9 @@ cmp.setup({
 	}),
 })
 
--- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
--- cmp.setup.cmdline("/", {
--- 	mapping = cmp.mapping.preset.cmdline(),
--- 	sources = {
--- 		{ name = "buffer" },
--- 	},
--- })
---
--- -- Use cmdline & path source for `:` (if you enabled `native_menu`, this won't work anymore).
--- cmp.setup.cmdline(":", {
--- 	mapping = cmp.mapping.preset.cmdline(),
--- 	sources = cmp.config.sources({
--- 		{ name = "path" },
--- 	}, {
--- 		{ name = "cmdline" },
--- 	}),
--- })
-
 require("mason").setup()
 require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls" },
+	ensure_installed = { "lua_ls", "tailwindcss", "ts_ls", "gopls" },
 })
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -154,9 +137,24 @@ require("lspconfig")["lua_ls"].setup({
 	},
 })
 
+require("lspconfig")["ts_ls"].setup({
+	capabilities = capabilities,
+})
+
+require("lspconfig")["tailwindcss"].setup({
+	capabilities = capabilities,
+})
+
+require("lspconfig")["gopls"].setup({
+	capabilities = capabilities,
+})
+
 require("conform").setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
+		javascript = { "prettier" },
+		typescript = { "prettier" },
+		go = { "gofumpt" },
 	},
 	format_on_save = {
 		-- These options will be passed to conform.format()
@@ -175,3 +173,5 @@ vim.keymap.set(
 	"<ESC><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>",
 	{ desc = "Toggle comment on selected lines" }
 )
+
+require("autoclose").setup()
