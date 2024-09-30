@@ -73,7 +73,7 @@ vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 ---@diagnostic disable-next-line: missing-fields
 require("nvim-treesitter.configs").setup({
 	-- A list of parser names, or "all" (the listed parsers MUST always be installed)
-	ensure_installed = { "lua", "markdown", "markdown_inline", "javascript", "typescript", "go" },
+	ensure_installed = { "lua", "markdown", "markdown_inline", "javascript", "typescript", "go", "html", "css" },
 
 	-- Install parsers synchronously (only applied to `ensure_installed`)
 	sync_install = false,
@@ -137,6 +137,7 @@ require("lspconfig")["lua_ls"].setup({
 	},
 })
 
+-- TODO: put into a table
 require("lspconfig")["ts_ls"].setup({
 	capabilities = capabilities,
 })
@@ -149,11 +150,25 @@ require("lspconfig")["gopls"].setup({
 	capabilities = capabilities,
 })
 
+require("lspconfig")["html"].setup({
+	capabilities = capabilities,
+})
+
+require("lspconfig")["cssls"].setup({
+	capabilities = capabilities,
+})
+
+require("lspconfig")["htmx"].setup({
+	capabilities = capabilities,
+})
+
 require("conform").setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
 		javascript = { "prettier" },
 		typescript = { "prettier" },
+		html = { "prettier" },
+		css = { "prettier" },
 		go = { "gofumpt" },
 	},
 	format_on_save = {
