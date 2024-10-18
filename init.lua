@@ -1,8 +1,18 @@
+-- one day i will seperate this into multiple files
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.relativenumber = true
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "netrw",
+	callback = function()
+		vim.api.nvim_buf_set_keymap(0, "n", "a", "%:call netrw#NetrwBrowseX('%')", { noremap = true, silent = true })
+	end,
+})
 
 -- i have no clue what localleader is but i may need to uncomment this later
 -- vim.g.maplocalleader = "\\"
@@ -37,7 +47,6 @@ require("lazy").setup({
 			"nvim-treesitter/nvim-treesitter",
 			build = ":TSUpdate",
 		},
-		{ "github/copilot.vim" },
 		{
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
@@ -73,7 +82,7 @@ vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 ---@diagnostic disable-next-line: missing-fields
 require("nvim-treesitter.configs").setup({
 	-- A list of parser names, or "all" (the listed parsers MUST always be installed)
-	ensure_installed = { "lua", "markdown", "markdown_inline", "javascript", "typescript", "go", "html", "css" },
+	ensure_installed = { "lua", "markdown", "markdown_inline", "javascript", "typescript", "go", "html", "css", "rust" },
 
 	-- Install parsers synchronously (only applied to `ensure_installed`)
 	sync_install = false,
@@ -117,7 +126,7 @@ cmp.setup({
 
 require("mason").setup()
 require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls", "tailwindcss", "ts_ls", "gopls" },
+	ensure_installed = { "lua_ls", "tailwindcss", "ts_ls", "gopls", "rust_analyzer", "html", "cssls", "htmx" },
 })
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -137,7 +146,6 @@ require("lspconfig")["lua_ls"].setup({
 	},
 })
 
--- TODO: put into a table
 require("lspconfig")["ts_ls"].setup({
 	capabilities = capabilities,
 })
@@ -147,6 +155,10 @@ require("lspconfig")["tailwindcss"].setup({
 })
 
 require("lspconfig")["gopls"].setup({
+	capabilities = capabilities,
+})
+
+require("lspconfig")["rust_analyzer"].setup({
 	capabilities = capabilities,
 })
 
