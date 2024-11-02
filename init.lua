@@ -14,7 +14,6 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- i have no clue what localleader is but i may need to uncomment this later
 -- vim.g.maplocalleader = "\\"
 
 -- Bootstrap lazy.nvim
@@ -38,11 +37,14 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 	spec = {
 		{
+			"rose-pine/neovim",
+			name = "rose-pine",
+		},
+		{
 			"nvim-telescope/telescope.nvim",
 			tag = "0.1.8",
 			dependencies = { "nvim-lua/plenary.nvim" },
 		},
-		{ "rose-pine/neovim", name = "rose-pine" },
 		{
 			"nvim-treesitter/nvim-treesitter",
 			build = ":TSUpdate",
@@ -77,7 +79,6 @@ vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" 
 vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
 
 vim.cmd("colorscheme rose-pine")
-
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 ---@diagnostic disable-next-line: missing-fields
@@ -203,3 +204,11 @@ vim.keymap.set(
 )
 
 require("autoclose").setup()
+
+-- vim.api.nvim_create_user_command("ToggleTheme", function()
+-- 	if vim.g.colors_name == "rose-pine-dawn" then
+-- 		vim.cmd.colorscheme("rose-pine")
+-- 	else
+-- 		vim.cmd.colorscheme("rose-pine-dawn")
+-- 	end
+-- end, {})
