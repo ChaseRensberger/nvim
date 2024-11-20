@@ -7,6 +7,7 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.relativenumber = true
+vim.opt.clipboard = "unnamedplus"
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "netrw",
@@ -213,3 +214,4 @@ require("autoclose").setup()
 -- 		vim.cmd.colorscheme("rose-pine-dawn")
 -- 	end
 -- end, {})
+
